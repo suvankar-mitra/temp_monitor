@@ -14,13 +14,21 @@ CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 if not BOT_TOKEN or not CHAT_ID:
     raise ValueError("API keys not found! Make sure they're set in the environment.")
 
+import os
 
-home_directory = os.getenv("HOME")
+# Get the script's directory
+script_directory = os.path.dirname(os.path.abspath(__file__))
+logs_directory = os.path.join(script_directory, "logs")
+
+# Create logs directory if it doesn't exist
+if not os.path.exists(logs_directory):
+    os.makedirs(logs_directory)
 
 HIGH_TEMP_THRESHOLD = 80  # Celsius
 
 # Set up logging
-LOG_FILE = f"{home_directory}/logs/temp_monitor.log"
+LOG_FILE = os.path.join(logs_directory, "temp_monitor.log")
+
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Function to check system temperatures
