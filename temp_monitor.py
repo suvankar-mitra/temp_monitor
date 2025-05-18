@@ -4,6 +4,7 @@ import time
 import logging
 import os
 import socket
+import re
 
 hostname = socket.gethostname()
 
@@ -31,20 +32,23 @@ LOG_FILE = os.path.join(logs_directory, "temp_monitor.log")
 
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+logging.info("Temperature monitoring started.")
+
 # Function to check system temperatures
 def get_temperatures():
     result = subprocess.run(["sensors"], capture_output=True, text=True)
     temps = {}
 
-    for line in result.stdout.split("\n"):
-        if "Core" in line or "Package id" in line or "Composite" in line or "Sensor" in line:
-            parts = line.split()
-            try:
-                temp = float(parts[1].replace("+", "").replace("°C", ""))
-                component = " ".join(parts[:-1])
-                temps[component] = temp
-            except ValueError:
-                continue
+    for line in result.stdout.splitlines():
+        # Match lines like:
+        # Core 0:        +74.0°C
+        # Package id 0:  +74.0°C
+        # Composite:     +40.9°C
+        match = re.match(r'^\s*(Core \d+|Package id \d+|Composite|temp\d+|Sensor \d+):\s+\+?([0-9.]+)°C', line)
+        if match:
+            label = match.group(1)
+            temperature = float(match.group(2))
+            temps[label] = temperature
 
     return temps
 
@@ -76,15 +80,16 @@ while True:
     current_time = time.time()
     
     for component, temp in temperatures.items():
-        logging.info(f"{component} Temperature: {temp}°C")  # Log regular readings
-        
+        logging.info(f"{component} Temperature: {temp}°C")  # Log regular readings        
         # Send alert if temperature exceeds 80°C
         if temp > HIGH_TEMP_THRESHOLD:
             send_alert(component, temp)
-        
-        # Send info update every 1 hour (3600 seconds)
-        if current_time - last_info_time >= 3600:
-            send_info(temp)
-            last_info_time = current_time
+
+    # Send info update once per hour
+    if current_time - last_info_time >= 3600:
+        # send max temp
+        max_temp = max(temperatures.values())
+        send_info(max_temp)
+        last_info_time = current_time
 
     time.sleep(60)  # Check every 60 seconds
