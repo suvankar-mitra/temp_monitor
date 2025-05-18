@@ -54,7 +54,7 @@ def get_temperatures():
 
 # Function to send an alert
 def send_alert(component, temp):
-    message = f"[{hostname}] 🔥 Warning! Temperature High: {temp}°C exceeded safe temperature {HIGH_TEMP_THRESHOLD}°C"
+    message = f"[{hostname}] 🔥🔥 Warning! Temperature High: {temp}°C exceeded safe temperature {HIGH_TEMP_THRESHOLD}°C"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, json=payload)
@@ -64,7 +64,7 @@ def send_alert(component, temp):
 
 # Function to send periodic info message
 def send_info(temp):
-    message = f"[{hostname}] 🧊 Info: Current temperature : {temp}°C"
+    message = f"[{hostname}] 🥶 Info: Current temperature : {temp}°C"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, json=payload)
