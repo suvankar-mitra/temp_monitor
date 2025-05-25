@@ -26,8 +26,8 @@ if not ssd2tb_path:
 
 SOURCE_DIR = Path.home() / "Downloads" / "complete"
 DEST_DIR = Path(ssd2tb_path)
-CHECK_INTERVAL = 60  # seconds
-STABILITY_WAIT = 3  # seconds
+CHECK_INTERVAL = 120  # seconds
+STABILITY_WAIT = 30  # seconds
 
 def is_file_stable(path):
     try:

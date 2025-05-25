@@ -8,7 +8,7 @@ The script ensures that files are no longer being written to before moving them,
 
 ## 🚀 What It Does
 
-- Periodically checks a downloads folder (every 60 seconds)
+- Periodically checks a downloads folder (every 120 seconds)
 - Verifies each file is stable (not being written to)
 - Moves stable files and folders to a target directory
 - Runs continuously in the background using `systemd`
